@@ -1,23 +1,45 @@
-clear all; 
+clear all;
 clc; 
-hold on 
-x = -4*pi:0.001:4*pi; 
-y1 = sin(x); 
-y = -4*pi:0.001:4*pi; 
-plot(x, y1); 
-plot(x, y); 
-figure; 
-n = 1; 
-hold off 
-while (abs(y(length(y))-y1(length(y))) >= 0.001)  	 	 	 	
-    hold on 
-    plot(x, y1); 
-    y = y + (((-1).^n).*(x.^(2*n+1)))/(factorial(2*n+1)); 
-    plot (x, y); 
-    figure; 
-    xlabel('x[]') 
-    ylabel('y[]') 
-    n = n + 1; 
-    disp(abs(y(length(y))-y1(length(y)))); 
-    hold off 
+e = 0.001; 
+lyambda = 0; 
+lyambda_next = 1000; 
+len = input('Matrix size:'); 
+disp('Matrix:'); 
+for i = 1:len 
+    for j = 1:len 
+        A(i,j) = input(''); 
+    end 
 end 
+disp('U:'); 
+for i = 1:len 
+    u_0(i) = input(''); 
+end 
+u = u_0'; 
+u_next = zeros(len); 
+while abs(lyambda_next - lyambda) > e 
+    lyambda = lyambda_next; 
+    u_next = A*u; 
+    numerator = dot(u_next,u); 
+    denominator = dot(u,u); 
+    lyambda_next = numerator/denominator;                                 
+    u = u_next; 
+    u_next = zeros(len); 
+end 
+disp('Lyambda_max ='); 
+disp(lyambda_next); 
+A = inv(A); 
+lyambda = 1000;  
+lyambda_next = 0; 
+u = u_0'; 
+u_next = zeros(len); 
+while abs(lyambda_next - lyambda) > e 
+    lyambda = lyambda_next; 
+    u_next = A*u; 
+    numerator = dot(u_next,u); 
+    denominator = dot(u,u); 
+    lyambda_next = numerator/denominator; 
+    u = u_next; 
+    u_next = zeros(len); 
+end 
+disp('Lyambda_min =');
+disp(lyambda_next); 

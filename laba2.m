@@ -1,48 +1,88 @@
 clear all; 
 clc; 
-D = 0:0.1:0.9; 
-v = [0.957, 0.969, 0.976, 0.978, 0.975, 0.968, 0.954, 0.939, 0.918, 0.894]; 
-N = 10; 
-m = 2; 
-POWERX = zeros(2*m); 
-for k = 1:2*m 
-    for i = 1:N 
-        POWERX(k) =  POWERX(k) + D(i).^k; 
-    end 
+Apprxmtn_1 = zeros(2,1); 
+Apprxmtn_2 = zeros(2,1); 
+Apprxmtn_1_next = zeros(2,1); 
+Apprxmtn_2_next = zeros(2,1); 
+disp('Initial approximation 1:'); 
+for i = 1:2  
+    Apprxmtn_1(i) = input(''); 
 end 
-SUMX = zeros(m+1, m+1); 
-for l = 1:m+1 
-    for j = 1:m+1 
-        if (j == 1 && l == 1) 
-            SUMX(l, j) = N; 
+disp('Initial approximation 2:'); 
+for i = 1:2  
+    Apprxmtn_2(i) = input(''); 
+end 
+eps_1 = 0.001; 
+eps_2 = 0.001; 
+NIT = input('NIT: '); 
+disp('No      d1       d2'); 
+d1 = 10; 
+d2 = 10; 
+i = 0; 
+while d1 >= eps_1 && d2 >= eps_2 
+    i = i + 1; 
+    f1 = cos(0.4*Apprxmtn_1(2) + (Apprxmtn_1(1)^2)) + Apprxmtn_1(2)^2 + Apprxmtn_1(1)^2 - 1.6; 
+    f2 = 1.5*Apprxmtn_1(1)^2 - (Apprxmtn_1(2)^2)/0.36 - 1; 26         W_1_1 = -
+    2*Apprxmtn_1(1)*sin(0.4*Apprxmtn_1(2)+(Apprxmtn_1(1)^2))+2*Apprxmtn_1(1); 
+    W_2_1 = 3*Apprxmtn_1(1); 
+    W_1_2 = -0.4*sin(0.4*Apprxmtn_1(2)+(Apprxmtn_1(1)^2))+2*Apprxmtn_1(2); 
+    W_2_2 = -2*Apprxmtn_1(2)/0.36; 
+    discrepancy_vector = [f1; f2]; 
+    W = [W_1_1 W_1_2; 
+    W_2_1 W_2_2]; 
+    W = inv(W); 
+    Apprxmtn_1_next = Apprxmtn_1 - W * discrepancy_vector; 
+    d1 = max(abs(f1), abs(f2)); 
+    d2_v = zeros(2); 
+    for j = 1:2 
+        if Apprxmtn_1_next(j) < 1 
+            d2_v(j) = (Apprxmtn_1_next(j) - Apprxmtn_1(j)); 
         else 
-            SUMX(l, j) = POWERX(l + j - 2);  	 	 	 	 	 	
+        d2_v(j) = (Apprxmtn_1_next(j) - 
+        Apprxmtn_1(j))/Apprxmtn_1_next(j); 
         end 
     end 
-end 
-PRAW = zeros(m+1); 
-for l = 1:m+1  
-    for i = 1:N 
-        PRAW(l) = PRAW(l) + v(i).*(D(i).^(l-1)); 
+    d2 = max(abs(d2_v(1)), abs(d2_v(2))); 
+    disp(i+"       "+d1+"      "+d2); 
+    Apprxmtn_1 = Apprxmtn_1_next; 
+    if i > NIT 
+        disp('IER = 2'); 
+        break; 
     end 
 end 
-coeff = SUMX.'\PRAW; 
-coeff = coeff.'; 
-S2 = 1; 
-for i = 1:N 
-    S2_ = v(i); 
-    for j = 1:m+1 
-        S2_ = S2_ - coeff(j).*(D.^(j-1));  
+disp(Apprxmtn_1(1)+" "+Apprxmtn_1(2)); 
+d1 = 10; 
+d2 = 10; 
+i = 0; 
+while d1 >= eps_1 && d2 >= eps_2 
+    i = i + 1; 
+    f1 = cos(0.4*Apprxmtn_2(2) + (Apprxmtn_2(1)^2)) + Apprxmtn_2(2)^2 + Apprxmtn_2(1)^2 - 1.6; 
+    f2 = 1.5*Apprxmtn_2(1)^2 - (Apprxmtn_2(2)^2)/0.36 - 1; 60         W_1_1 = -
+    2*Apprxmtn_2(1)*sin(0.4*Apprxmtn_2(2)+(Apprxmtn_2(1)^2))+2*Apprxmtn_2(1); 
+    W_2_1 = 3*Apprxmtn_2(1); 
+    W_1_2 = -0.4*sin(0.4*Apprxmtn_2(2)+(Apprxmtn_2(1)^2))+2*Apprxmtn_2(2); 
+    W_2_2 = -2*Apprxmtn_2(2)/0.36; 
+    discrepancy_vector = [f1; f2]; 
+    W = [W_1_1 W_1_2; 
+    W_2_1 W_2_2]; 
+    W = inv(W); 
+    Apprxmtn_2_next = Apprxmtn_2 - W * discrepancy_vector; 
+    d1 = max(abs(f1), abs(f2)); 
+    d2_v = zeros(2); 
+    for j = 1:2 
+        if Apprxmtn_2_next(j) < 1 
+            d2_v(j) = (Apprxmtn_2_next(j) - Apprxmtn_2(j)); 
+        else 
+            d2_v(j) = (Apprxmtn_2_next(j) - 
+            Apprxmtn_2(j))/Apprxmtn_2_next(j); 
+        end 
     end 
-    S2 = S2 + (S2_.^2); 
+    d2 = max(abs(d2_v(1)), abs(d2_v(2))); 
+    disp(i+"       "+d1+"      "+d2); 
+    Apprxmtn_2 = Apprxmtn_2_next; 
+    if i > NIT 
+        disp('IER = 2'); 
+        break; 
+    end 
 end 
-S2 = S2./(N-m-1); 
-sigma = sqrt(S2); 
-disp(S2); 
-disp(sigma); 
-x = 0:0.01:1; 
-y = coeff(1, 3)*x.^2 + coeff(1, 2)*x + coeff(1, 1); 
-figure; 
-plot (D, v, '-o', 'Color', 'r'); 
-hold on 
-plot (x, y, 'b'); 
+disp(Apprxmtn_2(1)+" "+Apprxmtn_2(2)); 
